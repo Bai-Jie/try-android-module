@@ -6,6 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0-rc1'
+        classpath 'me.tatarka:gradle-retrolambda:3.3.0-beta4'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -41,6 +42,17 @@ project(javaProjects + androidProjects) {
         testCompile 'junit:junit:4.12'
     }
 }
+// for lambda support
+project(androidProjects) {
+    apply plugin: 'me.tatarka.retrolambda'
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+}
+// for lambda support end
 
 
 
