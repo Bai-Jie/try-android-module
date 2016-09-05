@@ -1,3 +1,4 @@
 rootProject.name = 'android-module'
 
 include 'business'
+include 'client:android'
