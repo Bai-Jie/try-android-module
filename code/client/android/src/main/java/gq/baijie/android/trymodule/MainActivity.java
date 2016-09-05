@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.widget.Toast;
 
+import gq.baijie.android.trymodule.business.Greeting;
+
 public class MainActivity extends AppCompatActivity {
 
   @Override
@@ -18,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     super.onCreateOptionsMenu(menu);
 
     menu.add("Hello").setOnMenuItemClickListener(menuItem -> {
-      Toast.makeText(MainActivity.this, "Hello World!", Toast.LENGTH_LONG).show();
+      final String text = Greeting.getInstance().say("World");
+      Toast.makeText(MainActivity.this, text, Toast.LENGTH_LONG).show();
       return true;
     });
 

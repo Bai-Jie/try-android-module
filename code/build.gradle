@@ -43,8 +43,10 @@ project(javaProjects + androidProjects) {
     }
 }
 // for lambda support
-project(androidProjects) {
+project(javaProjects + androidProjects) {
     apply plugin: 'me.tatarka.retrolambda'
+}
+project(androidProjects) {
     android {
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
