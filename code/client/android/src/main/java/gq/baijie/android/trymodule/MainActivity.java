@@ -25,6 +25,7 @@ import gq.baijie.android.trymodule.view.MainLayoutView;
 public class MainActivity extends AppCompatActivity implements KeyChanger {
 
   private MainLayoutView mainLayoutView;
+  private View contentView;
 
   @Override
   protected void attachBaseContext(Context newBase) {
@@ -60,8 +61,14 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
                         @NonNull Map<Object, Context> incomingContexts,
                         @NonNull TraversalCallback callback) {
     Object key = incomingState.getKey();
+    // * clean up showing view
+    if (contentView != null && outgoingState != null) {
+      // ** save state
+      outgoingState.save(contentView);
+      contentView = null;
+    }
+    // * show new view
     mainLayoutView.updateNavigationStates(key);
-    View contentView;
     if (NavigationStates.PAGE2.equals(key)) {
       contentView = LayoutInflater.from(incomingContexts.get(key))
           .inflate(R.layout.page2, mainLayoutView, false);
@@ -71,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
       textView.setText(key.toString());
       contentView = textView;
     }
+    // ** restore state
+    incomingState.restore(contentView);
     mainLayoutView.setContentView(contentView);
     callback.onTraversalCompleted();
   }
