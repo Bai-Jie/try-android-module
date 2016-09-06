@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
                         @NonNull Direction direction,
                         @NonNull Map<Object, Context> incomingContexts,
                         @NonNull TraversalCallback callback) {
-
+    callback.onTraversalCompleted();
   }
 
 }
