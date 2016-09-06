@@ -3,4 +3,9 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="sample_text">
+"    Android 7.0 Nougat introduces a variety of new features and capabilities for users and developers. This document highlights what's new for developers.
+    Make sure check out the Android 7.0 behavior changes to learn about areas where platform changes may affect your apps.
+    To learn more about the consumer features of Android 7.0, visit www.android.com."</string>
 </resources>

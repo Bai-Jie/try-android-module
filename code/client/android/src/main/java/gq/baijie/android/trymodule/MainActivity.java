@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.Map;
@@ -57,11 +59,19 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
                         @NonNull Direction direction,
                         @NonNull Map<Object, Context> incomingContexts,
                         @NonNull TraversalCallback callback) {
-    mainLayoutView.updateNavigationStates(incomingState.getKey());
-    final TextView textView = new TextView(incomingContexts.get(incomingState.getKey()));
-    textView.setGravity(Gravity.CENTER);
-    textView.setText(incomingState.getKey().toString());
-    mainLayoutView.setContentView(textView);
+    Object key = incomingState.getKey();
+    mainLayoutView.updateNavigationStates(key);
+    View contentView;
+    if (NavigationStates.PAGE2.equals(key)) {
+      contentView = LayoutInflater.from(incomingContexts.get(key))
+          .inflate(R.layout.page2, mainLayoutView, false);
+    } else {
+      final TextView textView = new TextView(incomingContexts.get(key));
+      textView.setGravity(Gravity.CENTER);
+      textView.setText(key.toString());
+      contentView = textView;
+    }
+    mainLayoutView.setContentView(contentView);
     callback.onTraversalCompleted();
   }
 
