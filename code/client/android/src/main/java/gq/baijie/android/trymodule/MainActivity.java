@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.widget.TextView;
 
 import java.util.Map;
 
@@ -15,14 +17,18 @@ import flow.KeyChanger;
 import flow.KeyDispatcher;
 import flow.State;
 import flow.TraversalCallback;
+import gq.baijie.android.trymodule.business.NavigationStates;
 import gq.baijie.android.trymodule.view.MainLayoutView;
 
 public class MainActivity extends AppCompatActivity implements KeyChanger {
+
+  private MainLayoutView mainLayoutView;
 
   @Override
   protected void attachBaseContext(Context newBase) {
     newBase = Flow.configure(newBase, this)
         .dispatcher(KeyDispatcher.configure(this, this).build())
+        .defaultKey(NavigationStates.PAGE1)
         .install();
     super.attachBaseContext(newBase);
   }
@@ -30,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    MainLayoutView mainLayoutView = new MainLayoutView(this);
+    mainLayoutView = new MainLayoutView(this);
     setContentView(mainLayoutView);
     // init toolbar
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -51,6 +57,11 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
                         @NonNull Direction direction,
                         @NonNull Map<Object, Context> incomingContexts,
                         @NonNull TraversalCallback callback) {
+    mainLayoutView.updateNavigationStates(incomingState.getKey());
+    final TextView textView = new TextView(incomingContexts.get(incomingState.getKey()));
+    textView.setGravity(Gravity.CENTER);
+    textView.setText(incomingState.getKey().toString());
+    mainLayoutView.setContentView(textView);
     callback.onTraversalCompleted();
   }
 

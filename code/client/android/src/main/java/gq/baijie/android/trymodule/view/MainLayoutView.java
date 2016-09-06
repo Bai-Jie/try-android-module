@@ -12,11 +12,21 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
+import flow.Flow;
 import gq.baijie.android.trymodule.R;
+import gq.baijie.android.trymodule.business.NavigationStates;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class MainLayoutView extends DrawerLayout
     implements NavigationView.OnNavigationItemSelectedListener {
+
+  private final NavigationView navigationView;
+
+  private final FrameLayout mainContainer;
 
   public MainLayoutView(Context context) {
     super(context);
@@ -39,8 +49,9 @@ public class MainLayoutView extends DrawerLayout
     inflater.inflate(R.layout.app_bar_main, this);
     inflater.inflate(R.layout.nav_main, this);
 
-    NavigationView nav = (NavigationView) findViewById(R.id.nav_view);
-    nav.setNavigationItemSelectedListener(this);
+    mainContainer = (FrameLayout) findViewById(R.id.main_container);
+    navigationView = (NavigationView) findViewById(R.id.nav_view);
+    navigationView.setNavigationItemSelectedListener(this);
   }
 
   public void bindActivity(Activity activity, @Nullable Toolbar toolbar) {
@@ -48,6 +59,17 @@ public class MainLayoutView extends DrawerLayout
         activity, this, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
     addDrawerListener(toggle);
     toggle.syncState();
+  }
+
+  public void updateNavigationStates(Object key) {
+    if (NavigationStates.PAGE1.equals(key)) {
+      navigationView.setCheckedItem(R.id.nav_camera);
+    }
+  }
+
+  public void setContentView(View view) {
+    mainContainer.removeAllViews();
+    mainContainer.addView(view, MATCH_PARENT, MATCH_PARENT);
   }
 
   // ########## Input:onBackPressed ##########
@@ -110,12 +132,13 @@ public class MainLayoutView extends DrawerLayout
 
     if (id == R.id.nav_camera) {
       // Handle the camera action
+      Flow.get(this).set(NavigationStates.PAGE1);
     } else if (id == R.id.nav_gallery) {
-
+      Flow.get(this).set(NavigationStates.PAGE2);
     } else if (id == R.id.nav_slideshow) {
-
+      Flow.get(this).set(NavigationStates.PAGE3);
     } else if (id == R.id.nav_manage) {
-
+      Flow.get(this).set(NavigationStates.PAGE4);
     } else if (id == R.id.nav_share) {
 
     } else if (id == R.id.nav_send) {
