@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
                         @NonNull Direction direction,
                         @NonNull Map<Object, Context> incomingContexts,
                         @NonNull TraversalCallback callback) {
-    Object key = incomingState.getKey();
+    final Object key = incomingState.getKey();
     // * clean up showing view
     if (contentView != null && outgoingState != null) {
       // ** save state
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
       contentView = null;
     }
     // * show new view
-    mainLayoutView.updateNavigationStates(key);
     if (NavigationStates.PAGE2.equals(key)) {
       contentView = LayoutInflater.from(incomingContexts.get(key))
           .inflate(R.layout.page2, mainLayoutView, false);
@@ -80,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
     }
     // ** restore state
     incomingState.restore(contentView);
+    mainLayoutView.updateNavigationStates(key);
     mainLayoutView.setContentView(contentView);
     callback.onTraversalCompleted();
   }

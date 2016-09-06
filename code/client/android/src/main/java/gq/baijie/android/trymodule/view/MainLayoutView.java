@@ -64,6 +64,12 @@ public class MainLayoutView extends DrawerLayout
   public void updateNavigationStates(Object key) {
     if (NavigationStates.PAGE1.equals(key)) {
       navigationView.setCheckedItem(R.id.nav_camera);
+    } else if (NavigationStates.PAGE2.equals(key)) {
+      navigationView.setCheckedItem(R.id.nav_gallery);
+    } else if (NavigationStates.PAGE3.equals(key)) {
+      navigationView.setCheckedItem(R.id.nav_slideshow);
+    } else if (NavigationStates.PAGE4.equals(key)) {
+      navigationView.setCheckedItem(R.id.nav_manage);
     }
   }
 
