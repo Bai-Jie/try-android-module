@@ -3,6 +3,7 @@ package gq.baijie.android.trymodule.view;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +29,8 @@ public class MainLayoutView extends DrawerLayout
 
   private final FrameLayout mainContainer;
 
+  private final AppBarLayout appBarLayout;
+
   public MainLayoutView(Context context) {
     super(context);
   }
@@ -49,6 +52,7 @@ public class MainLayoutView extends DrawerLayout
     inflater.inflate(R.layout.app_bar_main, this);
     inflater.inflate(R.layout.nav_main, this);
 
+    appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
     mainContainer = (FrameLayout) findViewById(R.id.main_container);
     navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
@@ -70,6 +74,9 @@ public class MainLayoutView extends DrawerLayout
       navigationView.setCheckedItem(R.id.nav_slideshow);
     } else if (NavigationStates.PAGE4.equals(key)) {
       navigationView.setCheckedItem(R.id.nav_manage);
+    }
+    if (!NavigationStates.PAGE2.equals(key)) {
+      appBarLayout.setExpanded(true);
     }
   }
 
