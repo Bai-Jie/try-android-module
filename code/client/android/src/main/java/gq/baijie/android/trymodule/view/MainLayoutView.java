@@ -75,7 +75,7 @@ public class MainLayoutView extends DrawerLayout
     } else if (NavigationStates.PAGE4.equals(key)) {
       navigationView.setCheckedItem(R.id.nav_manage);
     }
-    if (!NavigationStates.PAGE2.equals(key)) {
+    if (!NavigationStates.PAGE1.equals(key) && !NavigationStates.PAGE2.equals(key)) {
       appBarLayout.setExpanded(true);
     }
   }

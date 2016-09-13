@@ -68,7 +68,10 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
       contentView = null;
     }
     // * show new view
-    if (NavigationStates.PAGE2.equals(key)) {
+    if (NavigationStates.PAGE1.equals(key)) {
+      contentView = LayoutInflater.from(incomingContexts.get(key))
+          .inflate(R.layout.page1, mainLayoutView, false);
+    } else if (NavigationStates.PAGE2.equals(key)) {
       contentView = LayoutInflater.from(incomingContexts.get(key))
           .inflate(R.layout.page2, mainLayoutView, false);
     } else {
