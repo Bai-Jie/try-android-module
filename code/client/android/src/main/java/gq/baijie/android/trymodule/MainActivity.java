@@ -2,8 +2,6 @@ package gq.baijie.android.trymodule;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -11,26 +9,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.Map;
-
-import flow.Direction;
 import flow.Flow;
-import flow.KeyChanger;
-import flow.KeyDispatcher;
 import flow.State;
-import flow.TraversalCallback;
+import gq.baijie.android.trymodule.business.NavigationService;
 import gq.baijie.android.trymodule.business.NavigationStates;
 import gq.baijie.android.trymodule.view.MainLayoutView;
 
-public class MainActivity extends AppCompatActivity implements KeyChanger {
+public class MainActivity extends AppCompatActivity {
+
+  private final NavigationService navigationService = new NavigationService();
 
   private MainLayoutView mainLayoutView;
   private View contentView;
 
+  public NavigationService getNavigationService() {
+    return navigationService;
+  }
+
   @Override
   protected void attachBaseContext(Context newBase) {
     newBase = Flow.configure(newBase, this)
-        .dispatcher(KeyDispatcher.configure(this, this).build())
+        .dispatcher(navigationService)
         .defaultKey(NavigationStates.PAGE1)
         .install();
     super.attachBaseContext(newBase);
@@ -46,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
     setSupportActionBar(toolbar);
     // init drawer
     mainLayoutView.bindActivity(this, toolbar);
+    // init navigation
+    setupNavigation();
   }
 
   @Override
@@ -55,36 +56,33 @@ public class MainActivity extends AppCompatActivity implements KeyChanger {
     }
   }
 
-  @Override
-  public void changeKey(@Nullable State outgoingState, @NonNull State incomingState,
-                        @NonNull Direction direction,
-                        @NonNull Map<Object, Context> incomingContexts,
-                        @NonNull TraversalCallback callback) {
-    final Object key = incomingState.getKey();
-    // * clean up showing view
-    if (contentView != null && outgoingState != null) {
-      // ** save state
-      outgoingState.save(contentView);
-      contentView = null;
-    }
+  private void setupNavigation() {
+    // * save origin's state
+    navigationService.getEventBus().filter(it->it.traversal.origin != null).subscribe(event->{
+      event.traversal.getState(event.traversal.origin.top()).save(contentView);
+    });
     // * show new view
-    if (NavigationStates.PAGE1.equals(key)) {
-      contentView = LayoutInflater.from(incomingContexts.get(key))
-          .inflate(R.layout.page1, mainLayoutView, false);
-    } else if (NavigationStates.PAGE2.equals(key)) {
-      contentView = LayoutInflater.from(incomingContexts.get(key))
-          .inflate(R.layout.page2, mainLayoutView, false);
-    } else {
-      final TextView textView = new TextView(incomingContexts.get(key));
-      textView.setGravity(Gravity.CENTER);
-      textView.setText(key.toString());
-      contentView = textView;
-    }
-    // ** restore state
-    incomingState.restore(contentView);
-    mainLayoutView.updateNavigationStates(key);
-    mainLayoutView.setContentView(contentView);
-    callback.onTraversalCompleted();
+    navigationService.getEventBus().subscribe(event->{
+      final Object incomingKey = event.traversal.destination.top();
+      final Context incomingContext = event.traversal.createContext(incomingKey, this);
+      final State incomingState = event.traversal.getState(incomingKey);
+
+      if (NavigationStates.PAGE1.equals(incomingKey)) {
+        contentView = LayoutInflater.from(incomingContext)
+            .inflate(R.layout.page1, mainLayoutView, false);
+      } else if (NavigationStates.PAGE2.equals(incomingKey)) {
+        contentView = LayoutInflater.from(incomingContext)
+            .inflate(R.layout.page2, mainLayoutView, false);
+      } else {
+        final TextView textView = new TextView(incomingContext);
+        textView.setGravity(Gravity.CENTER);
+        textView.setText(incomingKey.toString());
+        contentView = textView;
+      }
+
+      incomingState.restore(contentView);
+      mainLayoutView.setContentView(contentView);
+    });
   }
 
 }

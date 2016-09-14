@@ -1,6 +1,5 @@
 package gq.baijie.android.trymodule.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -17,6 +16,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import flow.Flow;
+import gq.baijie.android.trymodule.MainActivity;
 import gq.baijie.android.trymodule.R;
 import gq.baijie.android.trymodule.business.NavigationStates;
 
@@ -58,14 +58,17 @@ public class MainLayoutView extends DrawerLayout
     navigationView.setNavigationItemSelectedListener(this);
   }
 
-  public void bindActivity(Activity activity, @Nullable Toolbar toolbar) {
+  public void bindActivity(MainActivity activity, @Nullable Toolbar toolbar) {
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
         activity, this, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
     addDrawerListener(toggle);
     toggle.syncState();
+    activity.getNavigationService().getEventBus().subscribe(event->{
+      updateNavigationStates(event.traversal.destination.top());
+    });
   }
 
-  public void updateNavigationStates(Object key) {
+  private void updateNavigationStates(Object key) {
     if (NavigationStates.PAGE1.equals(key)) {
       navigationView.setCheckedItem(R.id.nav_camera);
     } else if (NavigationStates.PAGE2.equals(key)) {
