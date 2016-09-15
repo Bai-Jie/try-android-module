@@ -43,6 +43,26 @@ project(javaProjects + androidProjects) {
         testCompile 'junit:junit:4.12'
     }
 }
+
+// for Dagger 2
+def daggerVersion = '2.7'
+project(javaProjects + androidProjects) {
+    dependencies {
+        compile "com.google.dagger:dagger:$daggerVersion"
+    }
+}
+project(javaProjects) {
+    dependencies {
+        compileOnly "com.google.dagger:dagger-compiler:$daggerVersion"
+    }
+}
+project(androidProjects) {
+    dependencies {
+        provided "com.google.dagger:dagger-compiler:$daggerVersion"
+    }
+}
+// for Dagger 2 end
+
 // for lambda support
 project(javaProjects + androidProjects) {
     apply plugin: 'me.tatarka.retrolambda'

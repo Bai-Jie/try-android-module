@@ -2,19 +2,26 @@ package gq.baijie.android.trymodule.business;
 
 import android.support.annotation.NonNull;
 
+import javax.inject.Inject;
 
 import flow.Dispatcher;
 import flow.Traversal;
 import flow.TraversalCallback;
+import gq.baijie.android.trymodule.MainActivityScope;
 import gq.baijie.android.trymodule.business.NavigationService.TraversalEvent;
 import gq.baijie.android.trymodule.util.Event;
 import gq.baijie.android.trymodule.util.EventBusHelper;
 import gq.baijie.android.trymodule.util.EventSource;
 import rx.Observable;
 
+@MainActivityScope
 public class NavigationService implements EventSource<TraversalEvent>, Dispatcher {
 
-  private EventBusHelper<TraversalEvent> eventBusHelper = EventBusHelper.create();
+  private final EventBusHelper<TraversalEvent> eventBusHelper = EventBusHelper.create();
+
+  @Inject
+  public NavigationService() {
+  }
 
   @Override
   public Observable<TraversalEvent> getEventBus() {

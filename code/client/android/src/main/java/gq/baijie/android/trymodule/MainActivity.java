@@ -2,6 +2,7 @@ package gq.baijie.android.trymodule;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -11,28 +12,45 @@ import android.widget.TextView;
 
 import flow.Flow;
 import flow.State;
+import gq.baijie.android.trymodule.business.DaggerService;
 import gq.baijie.android.trymodule.business.NavigationService;
 import gq.baijie.android.trymodule.business.NavigationStates;
 import gq.baijie.android.trymodule.view.MainLayoutView;
+import mortar.MortarScope;
+
+import static gq.baijie.android.trymodule.business.DaggerService.createComponent;
+import static mortar.MortarScope.buildChild;
 
 public class MainActivity extends AppCompatActivity {
 
-  private final NavigationService navigationService = new NavigationService();
+  private static final String SCOPE_NAME = MainActivity.class.getName();
+
+  private NavigationService navigationService;
 
   private MainLayoutView mainLayoutView;
   private View contentView;
 
-  public NavigationService getNavigationService() {
-    return navigationService;
-  }
-
   @Override
   protected void attachBaseContext(Context newBase) {
     newBase = Flow.configure(newBase, this)
-        .dispatcher(navigationService)
+        .dispatcher((traversal, callback) -> navigationService.dispatch(traversal, callback))
         .defaultKey(NavigationStates.PAGE1)
         .install();
     super.attachBaseContext(newBase);
+  }
+
+  @Override
+  public Object getSystemService(@NonNull String name) {
+    MortarScope activityScope = MortarScope.findChild(getApplicationContext(), SCOPE_NAME);
+
+    if (activityScope == null) {
+      activityScope = buildChild(getApplicationContext()) //
+          .withService(DaggerService.SERVICE_NAME, createComponent(MainActivityComponent.class))
+          .build(SCOPE_NAME);
+    }
+
+    return activityScope.hasService(name) ? activityScope.getService(name)
+                                          : super.getSystemService(name);
   }
 
   @Override
@@ -43,10 +61,20 @@ public class MainActivity extends AppCompatActivity {
     // init toolbar
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
-    // init drawer
-    mainLayoutView.bindActivity(this, toolbar);
     // init navigation
+    final MainActivityComponent component = DaggerService.getDaggerComponent(this);
+    navigationService = component.getNavigationService();
     setupNavigation();
+  }
+
+  @Override
+  protected void onDestroy() {
+    if (isFinishing()) {
+      MortarScope activityScope = MortarScope.findChild(getApplicationContext(), SCOPE_NAME);
+      if (activityScope != null) activityScope.destroy();
+    }
+
+    super.onDestroy();
   }
 
   @Override
@@ -56,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+  //TODO improve this bind method
   private void setupNavigation() {
     // * save origin's state
     navigationService.getEventBus().filter(it->it.traversal.origin != null).subscribe(event->{
